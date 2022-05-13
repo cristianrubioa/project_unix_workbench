@@ -8,20 +8,39 @@ echo "-------------------------------------------------"
 echo " * Guess number of files in current directory "
 echo " Help: Type a number and then press [Enter]"
 
-current_number_files=`find . -type f | wc -l`
 
-while [[ $guess_number -ne $current_number_files ]]
+let correctAnswer=`find . -type f | grep -v git | wc -l`
+let found=0
+
+function getInput()
+{
+  local validInput=0
+  while [[ validInput -eq 0 ]]
+  do
+    read -p 'Guess number: ' guess
+    if [[ $guess =~(^[+,-]{0,1}[0-9]+) ]]
+    then
+      let validInput=1
+    else
+      echo 'Please enter a NUMBER.'
+      echo ""
+   fi
+  done
+}
+
+while [[ $found -ne 1 ]]
 do
     echo ""
-    read -p "Guess a number: "  guess_number
-    if [[ $guess_number -eq $current_number_files ]]
+    getInput 
+    if [[ guess -lt $correctAnswer ]]
     then
-        echo " Congratulations you guessed!!"
-        echo " Thanks for playing :)"
-    elif [[ $guess_number -gt $current_number_files ]]
+        echo " Your guess is less than the correct answer :("
+    elif [[ guess -gt $correctAnswer ]]
     then
-        echo " Is a smaller number :("
+        echo " Your guess is greater than the correct answer :("
     else
-        echo " Is a larger number :("
+        echo " Congratulations! you guessed!!"
+        echo " Thanks for playing :)"
+        let found=1
     fi   
 done
